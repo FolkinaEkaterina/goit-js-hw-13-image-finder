@@ -1,0 +1,36 @@
+<section class="input-section">
+  <div class="container">
+    <form class="search-form" id="search-form">
+      <input
+        type="text"
+        name="query"
+        autocomplete="off"
+        placeholder="Search images..."
+        class="input-value"
+        minlength="2"
+        required
+      />
+      <button class="btn-search" type="submit">
+        <span class="material-icons"> image_search </span>
+      </button>
+    </form>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <ul class="gallery js-pictures-container list">
+      <!-- Список <li> с карточками изображений -->
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <button type="button" class="button" data-action="load-more">
+      <span class="spinner is-hidden" role="status" aria-hidden="true"></span>
+
+      <span class="label">Показать ещё</span>
+    </button>
+  </div>
+</section>
