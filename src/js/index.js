@@ -3,6 +3,7 @@ import cardTpl from '../templates/card-image.hbs';
 import API from './apiService';
 import getRefs from './get-refs';
 import LoadMoreBtn from './load-more-btn';
+import Notiflix from 'notiflix';
 
 const loadMoreBtn = new LoadMoreBtn({
   selector: '[data-action="load-more"]',
@@ -21,35 +22,45 @@ function onSearch(e) {
   apiService.query = e.currentTarget.elements.query.value.trim();
 
   if (!apiService.query) {
-    clearPicturesContainer();
-    loadMoreBtn.hide();
-    return alert('Пустая строка! Ведите значение.');
+    return Notiflix.Notify.warning('Пустая строка! Ведите значение.');
   }
 
   loadMoreBtn.show();
   apiService.resetPage();
   clearPicturesContainer();
-  onLoadMore();
+
+  loadMoreBtn.disable();
+
+  apiService.fetchPictures().then(hits => {
+    appendCardMarkup(hits);
+    loadMoreBtn.enable();
+    if (!hits.length) {
+      loadMoreBtn.hide();
+      return Notiflix.Notify.warning('по вашему запросу ничего не найдено');
+    }
+  });
 }
 
 function onLoadMore() {
   loadMoreBtn.disable();
+
   apiService.fetchPictures().then(hits => {
     appendCardMarkup(hits);
     loadMoreBtn.enable();
-    scrollIntoView();
-  });
-}
 
-function scrollIntoView() {
-  const gallery = document.querySelectorAll('.gallery-card');
-
-  if (gallery.length > apiService.per_page) {
-    gallery[gallery.length - apiService.per_page].scrollIntoView({
+    if (!hits.length || hits.length < 11) {
+      loadMoreBtn.hide();
+      refs.load.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end',
+      });
+      return Notiflix.Notify.warning('Последние картинки по запросу');
+    }
+    refs.load.scrollIntoView({
       behavior: 'smooth',
       block: 'end',
     });
-  }
+  });
 }
 
 function appendCardMarkup(hits) {
