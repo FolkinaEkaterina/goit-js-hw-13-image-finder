@@ -31,42 +31,37 @@ function onSearch(e) {
 
   loadMoreBtn.disable();
 
-  apiService.fetchPictures().then(hits => {
-    appendCardMarkup(hits);
-    loadMoreBtn.enable();
-    if (!hits.length) {
-      loadMoreBtn.hide();
-      return Notiflix.Notify.warning('по вашему запросу ничего не найдено');
-    }
-  });
+  onLoadMore();
 }
 
 function onLoadMore() {
-  loadMoreBtn.disable();
+  apiService.fetchPictures().then(appendCardMarkup);
 
-  apiService.fetchPictures().then(hits => {
-    appendCardMarkup(hits);
-    loadMoreBtn.enable();
-
-    if (!hits.length || hits.length < 11) {
-      loadMoreBtn.hide();
-      refs.load.scrollIntoView({
-        behavior: 'smooth',
-        block: 'end',
-      });
-      return Notiflix.Notify.warning('Последние картинки по запросу');
-    }
-    refs.load.scrollIntoView({
-      behavior: 'smooth',
-      block: 'end',
-    });
-  });
+  loadMoreBtn.enable();
 }
 
 function appendCardMarkup(hits) {
   refs.picturesContainer.insertAdjacentHTML('beforeend', cardTpl(hits));
+
+  if (!hits.length) {
+    loadMoreBtn.hide();
+    return Notiflix.Notify.warning('по вашему запросу ничего не найдено');
+  }
+  if (!hits.length || hits.length < 11) {
+    loadMoreBtn.hide();
+    scrollInto();
+    return Notiflix.Notify.warning('Последние картинки по запросу');
+  }
+  scrollInto();
 }
 
 function clearPicturesContainer() {
   refs.picturesContainer.innerHTML = '';
+}
+
+function scrollInto() {
+  refs.load.scrollIntoView({
+    behavior: 'smooth',
+    block: 'end',
+  });
 }
